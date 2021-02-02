@@ -91,10 +91,10 @@
                                                         <td>{{ $item->kelas->kelas }}</td>
 
                                                         <td>
-                                                            <a href="{{ url('penilaians/'.$item->nisn) }}"
+                                                            <a href="{{ url('penilaian/input/'.$item->nisn) }}"
                                                                 class="label label-primary"> <i
                                                                     class="fa fa-edit"></i>Nilai PIB </a> |<a
-                                                                href="{{ url('penilaians/'.$item->nisn) }}"
+                                                                href="{{ url('penilaian/detail/'.$item->nisn) }}"
                                                                 class="label label-primary"> <i
                                                                     class="fa fa-edit"></i>Lihat Nilai PIB </a>
 

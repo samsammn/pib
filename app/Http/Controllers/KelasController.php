@@ -14,8 +14,12 @@ class KelasController extends Controller
      */
     public function index()
     {
-        $kelases = Kelas::where('tingkat', 'XII')->get();
-       // $kelases = Kelas::all();
+        $kelases = Kelas::selectRaw('kelas.id, kelas.kelas, count(*) as total_perkelas')
+                ->join('siswas', 'siswas.kelas_id', '=', 'kelas.id')
+                ->where('tingkat', 'XII')
+                ->groupBy(['id', 'kelas'])
+                ->get();
+
         return view('kelas/index', compact('kelases'));
     }
 
@@ -48,8 +52,8 @@ class KelasController extends Controller
      */
     public function show($id)
     {
-       $kelas = Kelas::find($id);
-       return $kelas;
+        $kelas = Kelas::find($id);
+        return $kelas;
     }
 
     /**

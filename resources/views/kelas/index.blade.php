@@ -21,7 +21,7 @@
     <section class="content">
     <section class="content">
       <div class="container-fluid">
-       
+
         <div class="row">
         @foreach($kelases as $item)
           <div class="col-md-3 col-sm-6 col-12">
@@ -29,9 +29,9 @@
               <span class="info-box-icon bg-info"><i class="far fa-user"></i></span>
 
               <div class="info-box-content">
-              
+
                 <span class="info-box-text"><a href="{{ url('siswas/'.$item->id) }}">{{ $item->kelas }}</a></span>
-                <span class="info-box-number">1,410</span>
+                <span class="info-box-number">{{ $item->total_perkelas }}</span>
               </div>
               <!-- /.info-box-content -->
             </div>

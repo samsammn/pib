@@ -17,10 +17,9 @@ class PenilaianController extends Controller
      */
     public function index()
     {
-       //return Penilaian::all();
-       $penilaians = Penilaian::all();
-       return view('penilaian/index', compact('penilaians'));
-    
+        //return Penilaian::all();
+        $penilaians = Penilaian::all();
+        return view('penilaian/index', compact('penilaians'));
     }
 
     /**
@@ -33,7 +32,7 @@ class PenilaianController extends Controller
         $siswas = Siswa::all();
         $komponens = Komponen::all();
         $subkomponens = Subkomponen::all();
-        return view('penilaian.create', compact('siswas', 'komponens','subkomponens'));
+        return view('penilaian.create', compact('siswas', 'komponens', 'subkomponens'));
     }
 
     /**
@@ -44,22 +43,17 @@ class PenilaianController extends Controller
      */
     public function store(Request $request)
     {
-       // return $request->all();
-       $penilaians = Penilaian::where('nisn', '=' ,$request->nisn);
-       //if($penilaians->count() > 0 ){
-       //    $penilaians->delete();
-       //} 
-        for($i=0; $i<count($request->nilai);$i++){
-            $penilaian = new Penilaian;
-            $penilaian->nisn = $request->nisn;
-            $penilaian->komponen_id = $request->komponen_id[$i];
-            $penilaian->subkomponen_id = $request->subkomponen_id[$i];
-            $penilaian->nilai = $request->nilai[$i]; 
-            $penilaian->save();
-            
+        for ($i = 0; $i < count($request->nilai); $i++) {
+            Penilaian::updateOrCreate([
+                'nisn' => $request->nisn,
+                'komponen_id' => $request->komponen_id[$i],
+                'subkomponen_id' => $request->subkomponen_id[$i]
+            ], [
+                'nilai' => $request->nilai[$i]
+            ]);
         }
 
-       return redirect('penilaians/'.$request->nisn)->with('status','Sub penilaian berhasil ditambah!');
+        return redirect('penilaian/input/' . $request->nisn)->with('status', 'Sub penilaian berhasil ditambah!');
     }
 
     /**
@@ -70,29 +64,56 @@ class PenilaianController extends Controller
      */
     public function show($id)
     {
+    }
+
+    public function input_nilai($id)
+    {
         $siswa = Siswa::where('nisn', $id)->first();
-        //if($siswa != null){
-          //   return response()->json($siswa->nama_siswa);
-        //}
-       
-       //$siswas = Siswa::all();
-       //return $siswas;
-       $komponens = Komponen::all();
-       
-       $subkomponens = Subkomponen::with(['komponen'])->get();
-       foreach($subkomponens as $sk){
-           $p = Penilaian::where('nisn', '=', $id)->where('subkomponen_id', '=', $sk->id)->first();
-           if($p != null ){
-               $sk->penilaian=$p->nilai;
-               $sk->penilaian_id=$p->id;
-           }
-           else {
-            $sk->penilaian=0;
-            $sk->penilaian_id='';
-           }
-       }
-      // return $subkomponens;
-        return view ('penilaian/penilaians', compact('siswa','subkomponens','komponens'));
+        $komponens = Komponen::all();
+        $subkomponens = Subkomponen::with(['komponen'])->paginate(5);
+
+        foreach ($subkomponens as $sk) {
+            $p = Penilaian::where('nisn', '=', $id)->where('subkomponen_id', '=', $sk->id)->first();
+            if ($p != null) {
+                $sk->penilaian = $p->nilai;
+                $sk->penilaian_id = $p->id;
+            } else {
+                $sk->penilaian = 0;
+                $sk->penilaian_id = '';
+            }
+        }
+
+        return view('penilaian/input', compact('siswa', 'subkomponens', 'komponens'));
+    }
+
+    public function detail_nilai($id)
+    {
+        $siswa = Siswa::where('nisn', $id)->first();
+        $komponens = Komponen::selectRaw('komponens.id, komponens.nama_komponen, AVG(penilaians.nilai) as nilai')
+                    ->join('subkomponens', 'subkomponens.komponen_id', '=', 'komponens.id')
+                    ->join('penilaians', 'penilaians.subkomponen_id', '=', 'subkomponens.id')
+                    ->where('penilaians.nisn', '=', $id)
+                    ->where('penilaians.nilai', '>', 0)
+                    ->groupBy(['id', 'nama_komponen'])
+                    ->get();
+
+        $sumNilai = 0;
+
+        foreach ($komponens as $item) {
+            $subkomponens = Subkomponen::selectRaw('subkomponens.subkomponen')
+                            ->join('penilaians', 'penilaians.subkomponen_id', '=', 'subkomponens.id')
+                            ->where('penilaians.nisn', '=', $id)
+                            ->where('penilaians.nilai', '>', 0)
+                            ->where('subkomponens.komponen_id', '=', $item->id)
+                            ->pluck('subkomponen');
+
+            $item->subkomponens = $subkomponens;
+            $sumNilai += $item->nilai;
+        }
+
+        $total = round($sumNilai / $komponens->count());
+
+        return view('penilaian/detail', compact('siswa', 'komponens', 'total'));
     }
 
     /**

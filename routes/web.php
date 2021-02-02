@@ -18,8 +18,11 @@ route::patch('komponen/{id}','komponenController@editProcess');
 route::delete('komponen/{id}','komponenController@delete');
 Route::get('subkomponen','subkomponenController@data');
 Route::get('subkomponen/add_sub','subkomponenController@add_sub');
+Route::get('subkomponen/create/{komponen_id}', 'SubkomponenController@create');
 Route::get('kelas','kelasController@data');
-//
+Route::get('penilaian/input/{id}', 'PenilaianController@input_nilai');
+Route::get('penilaian/detail/{id}', 'PenilaianController@detail_nilai');
+
 Route::resource('subkomponens', 'SubkomponenController');
 Route::resource('penilaians', 'PenilaianController');
 Route::resource('kelases', 'KelasController');

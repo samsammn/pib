@@ -15,12 +15,8 @@ class SubkomponenController extends Controller
      */
     public function index()
     {
-        //$subkomponens = Komponen::where('komponen_id', $id)->get();
         $subkomponens = Subkomponen::all();
-        //return $subkomponens;
-        //return view('subkomponen/create', compact('subkomponens'));
         return view('subkomponen/index', compact('subkomponens'));
-
     }
 
     /**
@@ -28,10 +24,10 @@ class SubkomponenController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($komponen_id)
     {
-        $komponens = Komponen::all();
-        return view('subkomponen.create', compact('komponens'));
+        $komponen = Komponen::find($komponen_id);
+        return view('subkomponen.create', compact('komponen'));
     }
 
     /**
@@ -43,23 +39,18 @@ class SubkomponenController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'subkomponen' => 'required|min:3',
-           
-            ],[
-              'subkomponen.required' => 'Nama Sub Komponen tidak boleh kosong'
-            ]);
-        $subkomponen = new Subkomponen;
+            'subkomponen' => 'required|min:3'
+        ], [
+            'subkomponen.required' => 'Nama Sub Komponen tidak boleh kosong'
+        ]);
+
+        $subkomponen = new Subkomponen();
         $subkomponen->komponen_id = $request->komponen_id;
         $subkomponen->subkomponen = $request->subkomponen;
         $subkomponen->save();
-       
-        return redirect('subkomponens')->with('status','Sub Komponen berhasil ditambah!');
-              
-              
-      
-     }    
-    
-    
+
+        return redirect('subkomponens/' . $request->komponen_id)->with('status', 'Sub Komponen berhasil ditambah!');
+    }
 
     /**
      * Display the specified resource.
@@ -70,10 +61,9 @@ class SubkomponenController extends Controller
     public function show($id)
     {
         $subkomponens = Subkomponen::where('komponen_id', $id)->get();
-       
-        return view ('subkomponen/subperkomponen', compact('subkomponens'));        
-        //$siswas = Siswa::where('kelas_id', $id)->get();
-        //return view ('siswa/siswaperkelas', compact('siswas'));
+        $komponen_id = $id;
+
+        return view('subkomponen/subperkomponen', compact('subkomponens', 'komponen_id'));
     }
 
     /**
@@ -101,7 +91,7 @@ class SubkomponenController extends Controller
                 'subkomponen' => $request->subkomponen
 
             ]);
-        return redirect('/subkomponens')->with('status','Sub Komponen berhasil diubah!');
+        return redirect('/subkomponens')->with('status', 'Sub Komponen berhasil diubah!');
     }
 
     /**
@@ -113,6 +103,6 @@ class SubkomponenController extends Controller
     public function destroy(Subkomponen $subkomponen)
     {
         Subkomponen::destroy($subkomponen->id);
-        return redirect('/subkomponens')->with('status','Sub Komponen berhasil dihapus!');
+        return redirect('/subkomponens')->with('status', 'Sub Komponen berhasil dihapus!');
     }
 }

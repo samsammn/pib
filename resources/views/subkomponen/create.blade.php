@@ -31,18 +31,11 @@
               <form method="POST" action="{{ url('subkomponens') }}" >
               @csrf
                 <div class="card-body">
-                
+
                   <div class="form-group">
                     <label for="exampleInputEmail1">Komponen</label>
-                        <select name="komponen_id" class="form-control">
-                    
-                          <option value=" ">--Pilih--</option>
-                          @foreach ($komponens as $item)
-                          <option value="{{ $item->id }}">{{ $item->nama_komponen }}</option>
-                          @endforeach
-                         
-                         
-                        </select>
+                        <input type="hidden" name="komponen_id" value="{{ $komponen->id }}">
+                        <input type="text" class="form-control" value="{{ $komponen->nama_komponen }}" disabled>
                   </div>
                   <div class="form-group">
                     <label for="exampleInputEmail1">Sub Komponen</label>
@@ -51,7 +44,7 @@
                     <div class="invalid-feedback"> {{ $message }} </div>
                     @enderror
                   </div>
-                  
+
                 <div class="card-footer">
                   <button type="submit" class="btn btn-primary">Simpan</button>
                 </div>
@@ -59,7 +52,7 @@
             </div>
             <!-- /.card -->
 
-      
+
         <!-- /.row -->
       </div>
     </section>

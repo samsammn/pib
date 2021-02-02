@@ -29,16 +29,11 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="col-md-2">
-                                <a href="{{ url('subkomponens/create') }}"
+                                <a href="{{ url('subkomponen/create/' . $komponen_id) }}"
                                     class="btn btn-block btn-primary btn-sm"> <i class="fa fa-plus"></i> Sub Komponen
                                 </a>
                             </div>
-
                         </div>
-
-
-
-
                         <!-- /.card-header -->
                         <div class="card-body">
                             <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4">
