@@ -15,7 +15,7 @@ class CreateWalisTable extends Migration
     {
         Schema::create('walis', function (Blueprint $table) {
             $table->id();
-            $table->string('wali_kelas', 50);
+            $table->string('wali_kelas', 55);
             $table->timestamps();
         });
     }
